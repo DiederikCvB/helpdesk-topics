@@ -1,7 +1,8 @@
 #Project
 Experiments/data/*
 !Experiments/data/.gitkeep
-
+Experiments/models/*
+!Experiments/models/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
