@@ -11,9 +11,9 @@ It may take a while to load because it uses (free) transient resources.
 
 For choosing the model I considered 3 main options:
 
--NMF
--LDA
--BERTopic
+- NMF
+- LDA
+- BERTopic
 
 All of them would have been good choices. The main reason I preferred NMF and LDA is because
 we do not have any labeled data and these are truly unsupervised models.
