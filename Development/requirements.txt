@@ -3,3 +3,5 @@ pandas
 spacy
 joblib
 scikit-learn
+en_core_web_sm
+spacy

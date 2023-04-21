@@ -1,8 +1,25 @@
 import pandas as pd
+import re
+import spacy
+import en_core_web_sm
 
 class Preprocessor:
-    def __call__(df):
-        df = df.apply(self.remove_ats) \
+    def __init__(self) -> None:
+        self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
+        
+    def preprocess(self, df):
+        docs = self.nlp.pipe(df['clean_text'], n_process=2)
+        processed = []
+        for doc in docs:
+            pos_sel = " ".join(token.lemma_ for token in doc if (token.pos_ in ['PROPN','NOUN','VERB'] and not token.is_stop))
+            processed.append(pos_sel)
+        df['processed_text'] = processed
+        return df
+    
+    def clean(self, text):
+        df = pd.DataFrame([text], dtype=str, columns=['text'])
+        print(df)
+        df['clean_text'] = df['text'].apply(self.remove_ats) \
             .apply(self.remove_tag) \
             .apply(self.remove_urls) \
             .apply(self.remove_emoji) \
@@ -10,23 +27,23 @@ class Preprocessor:
             .apply(self.replace_hashtags) 
         return df    
 
-    def remove_ats(text):
+    def remove_ats(self, text):
     #Remove all @ tags        
         at_pattern = re.compile('@[a-zA-Z\d_]+')
         return at_pattern.sub(r'', text)
     
-    def remove_tag(text):
+    def remove_tag(self, text):
     #Remove all employee tags
     #Tags occur at the end of the line with capital letters and prefix '-' or '^'           
         at_pattern = re.compile('[\^\-][A-Z\d]+$')
         return at_pattern.sub(r'', text)
     
-    def remove_urls(text):
+    def remove_urls(self, text):
         #Remove URLS
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         return url_pattern.sub(r'', text)
 
-    def remove_emoji(text):  
+    def remove_emoji(self, text):  
         #Remove smileys 
         emoji_pattern = re.compile("["
                                 "\U0001F1E0-\U0001F1FF"  # flags (iOS)
@@ -44,15 +61,16 @@ class Preprocessor:
                             "]+", flags=re.UNICODE)
         return emoji_pattern.sub(r'', text)
   
-    def remove_specialchars(text):
+    def remove_specialchars(self, text):
         #Remove newlines.
         char_pattern = re.compile('[\n\'\"]')
         return char_pattern.sub(r'', text)
 
-    def replace_hashtags(text):
+    def replace_hashtags(self, text):
         #Replace hashtags with spaces, these could be useful words so we want to recover them
         char_pattern = re.compile('[\#]')
         return char_pattern.sub(r' ', text)
+    
     
 class TopicPredictor:
     def __init__(self, nmf, vectorizer, version=''):
@@ -74,16 +92,11 @@ class TopicPredictor:
             res.append(descr)
         return res
 
-    def predict(self, raw_text):
+    def predict(self, doc):
         """
         Predicts the topic of a new piece of raw text 
         Returns: topic number and description of that topic in word scores
         """
-        doc = pd.DataFrame([raw_text], dtype=str, columns=['text'])
-
-        doc['clean_text'] = self.clean_df(doc['text'])
-        doc['processed_text'] = self.preprocess(doc['clean_text'])
-
         vectorized = self.vectorizer.transform(doc["processed_text"])
         nmf = self.nmf.transform(vectorized) 
         print("Processed text:", doc['processed_text'])
