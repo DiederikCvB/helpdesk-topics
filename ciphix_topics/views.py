@@ -12,8 +12,8 @@ from DiedsModule.TopicModel import Preprocessor, TopicPredictor
 # Load models and preprocessing once
 
 version = '_customers'
-nmf = joblib.load(settings.STATIC_ROOT / f'nmf{version}.joblib')
-vectorizer = joblib.load(settings.STATIC_ROOT / f'vectorizer{version}.joblib')
+nmf = joblib.load(Path(settings.STATIC_ROOT) / f'nmf{version}.joblib')
+vectorizer = joblib.load(Path(settings.STATIC_ROOT) / f'vectorizer{version}.joblib')
 
 preproc = Preprocessor()
 topic_model = TopicPredictor(nmf, vectorizer, version)
