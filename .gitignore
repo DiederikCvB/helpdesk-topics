@@ -1,8 +1,13 @@
-#Project
+#Experiments
+ciphix_venv/
 Experiments/data/*
 !Experiments/data/.gitkeep
 Experiments/models/*
 !Experiments/models/.gitkeep
+
+#Development
+Development/dev_env
+Development/dev_env/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
