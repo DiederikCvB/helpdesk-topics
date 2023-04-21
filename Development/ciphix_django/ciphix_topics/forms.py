@@ -1,4 +1,4 @@
 from django import forms
 
 class CommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea)
+    message = forms.CharField(widget=forms.Textarea(attrs={'style' : 'width: 80%; height: 170px; display: block; margin-left: auto; margin-right: auto;'}))

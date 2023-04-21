@@ -2,6 +2,9 @@ import pandas as pd
 import re
 import spacy
 import en_core_web_sm
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 
 class Preprocessor:
     def __init__(self) -> None:
@@ -92,6 +95,31 @@ class TopicPredictor:
             res.append(descr)
         return res
 
+    def get_graph(self):
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        graph = base64.b64encode(image_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        return graph
+
+    def visualize_topic(self, topicnr):
+        plt.switch_backend('AGG')
+
+        fig = plt.figure(figsize=(10, 4))
+        resdf = pd.DataFrame(self.topic_descr[topicnr])\
+                .rename(columns={0:'topic', 1:'score'})
+        
+        resdf = resdf.set_index('topic').iloc[::-1]
+        plt.title(f'Topic-class={topicnr}')
+        plt.barh(resdf.index, resdf['score'], align='center')
+
+        plt.tight_layout()
+        chart = self.get_graph()
+        return chart
+
     def predict(self, doc):
         """
         Predicts the topic of a new piece of raw text 
@@ -104,4 +132,4 @@ class TopicPredictor:
 
         predicted_topic = [each.argsort()[::-1][0] for each in nmf]
         topic_descr = self.topic_descr[predicted_topic[0]]
-        return predicted_topic, topic_descr    
+        return predicted_topic[0], topic_descr    

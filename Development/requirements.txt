@@ -3,5 +3,8 @@ pandas
 spacy
 joblib
 scikit-learn
-en_core_web_sm
 spacy
+matplotlib
+
+# python installs using 'python -m spacy download <package>':
+# en_core_web_sm
