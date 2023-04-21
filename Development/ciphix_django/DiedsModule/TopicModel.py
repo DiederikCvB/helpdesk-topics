@@ -97,6 +97,7 @@ class TopicPredictor:
         Predicts the topic of a new piece of raw text 
         Returns: topic number and description of that topic in word scores
         """
+        assert len(doc) > 0, f"number greater than 0 expected, got: {number}"
         vectorized = self.vectorizer.transform(doc["processed_text"])
         nmf = self.nmf.transform(vectorized) 
         print("Processed text:", doc['processed_text'])

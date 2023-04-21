@@ -22,7 +22,8 @@ topic_model = TopicPredictor(nmf, vectorizer, version)
 
 def index(request):
     predicted_label = None
-
+    text = None
+    descr = None
     if request.method == 'POST':
         # in case of POST: get the uploaded text from the form and process it
         form = CommentForm(request.POST)
@@ -33,6 +34,23 @@ def index(request):
 
             # clean the text
             df = preproc.clean(text)
+            try: #check if we have enough material left after cleaning
+                stripped = df['clean_text'].str.replace('\s+', '' , regex=True)
+                assert  len(stripped.loc[0]) > 1, \
+                         f"Not enough text left after stripping whitespaces and URLS+symbols: \n \"{stripped.loc[0]}\""
+            except AssertionError as ve:
+                print(ve)
+                
+                return render(
+                    request,
+                    'ciphix_topics/index.html',
+                    {
+                        'form': form,
+                        'entered_text' : text,
+                        'errormessage' : ve,
+                    }
+                )
+
             df = preproc.preprocess(df)
             print('Preprocessed: \n',df, '\n')
 
@@ -47,7 +65,7 @@ def index(request):
         # in case of GET: simply show the empty form for uploading text
         form = CommentForm()
 
-    # pass the form, image URI, and predicted label to the template to be rendered
+    # pass the form, text, and predicted label to the template to be rendered
     context = {
         'form': form,
         'predicted_label': predicted_label,
