@@ -1,0 +1,10 @@
+django
+pandas
+spacy
+joblib
+scikit-learn
+spacy
+matplotlib
+
+# python installs using 'python -m spacy download <package>':
+# en_core_web_sm
