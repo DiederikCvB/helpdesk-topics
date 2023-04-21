@@ -1,7 +1,7 @@
 """ Production Settings """
 # default: use settings from main settings.py if not overwritten
 from .settings import *
-
+import os
 import django_heroku
 
 

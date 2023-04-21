@@ -8,8 +8,12 @@ import base64
 
 class Preprocessor:
     def __init__(self) -> None:
-        self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
-        
+        try:
+            self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
+        except: #not present, and cannot be installed with pip (for Heroku)
+            spacy.cli.download("en_core_web_sm")
+            self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
+
     def preprocess(self, df):
         docs = self.nlp.pipe(df['clean_text'], n_process=2)
         processed = []
