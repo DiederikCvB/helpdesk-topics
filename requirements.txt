@@ -5,6 +5,7 @@ joblib
 scikit-learn
 spacy
 matplotlib
+gunicorn
 
 # python installs using 'python -m spacy download <package>':
 # en_core_web_sm
