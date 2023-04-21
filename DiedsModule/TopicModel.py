@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 import spacy
-import en_core_web_sm
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
@@ -12,7 +11,7 @@ class Preprocessor:
             self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
         except: #not present, and cannot be installed with pip (for Heroku)
             spacy.cli.download("en_core_web_sm")
-            self.nlp = en_core_web_sm.load(disable=["parser", "ner", "textcat"])
+            self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner", "textcat"])
 
     def preprocess(self, df):
         docs = self.nlp.pipe(df['clean_text'], n_process=2)
